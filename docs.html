@@ -35,7 +35,7 @@
         <a href="#operators" class="list-group-item font-weight-bold">Operators</a>
         <a href="#examples" class="list-group-item font-weight-bold">Examples</a>
         <div class="list-group">
-            <a href="#random-color" class="list-group-item">Random Color</a>
+            <a href="#reverse-vowels" class="list-group-item">Reverse Vowels</a>
         </div>
     </div>
 
@@ -47,35 +47,13 @@
             <thead class="thead-inverse">
             <tr>
                 <th>Token</th>
-                <th>Precedence</th>
-                <th>Associativity</th>
                 <th>Description</th>
             </tr>
             </thead>
             <tbody>
             <tr>
-                <th scope="row" class="code">+</th>
-                <td>2</td>
-                <td>Left</td>
-                <td>Adds two numbers</td>
-            </tr>
-            <tr>
-                <th scope="row" class="code">-</th>
-                <td>2</td>
-                <td>Left</td>
-                <td>Subtracts two numbers</td>
-            </tr>
-            <tr>
-                <th scope="row" class="code">*</th>
-                <td>3</td>
-                <td>Left</td>
-                <td>Multiplies two numbers</td>
-            </tr>
-            <tr>
-                <th scope="row" class="code">/</th>
-                <td>3</td>
-                <td>Left</td>
-                <td>Divides two numbers</td>
+                <th scope="row" class="code">r</th>
+                <td>Reverses the string, with optional character regex matching (see the <a href="#reverse-vowels">reverse vowels example</a>)</td>
             </tr>
             </tbody>
         </table>
@@ -85,14 +63,12 @@
 
         <h1 id="examples">Examples</h1>
 
-        <div id="random-color" class="card card-block">
-            <h4 class="card-title">Random Color</h4>
-            <p class="card-text">Generates a random color, which fills the image.</p>
-            <pre>rgb(rand()*255,rand()*255,rand()*255);
-rect(0,0,600,400);
-</pre>
+        <div id="reverse-vowels" class="card card-block">
+            <h4 class="card-title">Reverse only the Vowels</h4>
+            <p class="card-text">Reverses only the vowels in the given input string.</p>
+            <pre>r[a|e|i|o|u]</pre>
             <p class="card-text">
-                <a class="btn btn-primary" href="index.html?rgb(rand()*255,rand()*255,rand()*255);rect(0,0,600,400);" target="_blank">Open with s-lang</a>
+                <a class="btn btn-primary" href="index.html?r[a|e|i|o|u]" target="_blank">Open with s-lang</a>
             </p>
         </div>
     </div>
