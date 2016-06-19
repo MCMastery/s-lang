@@ -4,7 +4,8 @@ String.prototype.replaceAt = function(index, character) {
 String.prototype.replaceAll = function(search, replacement) {
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
-};String.prototype.replaceAllNoRegex = function(search, replacement) {
+};
+String.prototype.replaceAllNoRegex = function(search, replacement) {
     var target = this;
     return target.split(search).join(replacement);
 };
@@ -30,7 +31,9 @@ function getArguments(string, functionIndex) {
         var char = nextChar(string, i);
         if (char != "[")
             return args;
-        args.push(stringInBrackets(string, i + 1, '[', ']'));
+        var arg = stringInBrackets(string, i + 1, '[', ']');
+        i += arg.length + 1;
+        args.push(arg);
     }
     return args;
 }
