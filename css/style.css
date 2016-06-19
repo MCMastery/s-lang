@@ -1,0 +1,82 @@
+:root {
+    --primary: #3281ff;
+    --light-gray: #dbdbdb;
+    --dark-gray: #787878;
+}
+
+* {
+    -webkit-transition: all 350ms;
+    -moz-transition: all 350ms;
+    -o-transition: all 350ms;
+    transition: all 350ms;
+    font-family: Open Sans, sans-serif;
+}
+
+h1, h2, h3 {
+    font-family: Raleway, sans-serif;
+    text-shadow: 1px 1px #000000;
+}
+
+.jumbotron {
+    text-align: center;
+    color: #ffffff;
+    background-color: var(--primary);
+}
+
+.container-fluid {
+    background-color: var(--light-gray);
+    padding: 20px;
+}
+
+.carousel {
+    max-width: 900px;
+}
+.carousel, .slide, .carousel-control, .carousel-item img,
+        textarea, input, table, .list-group {
+    border-radius: 5px;
+}
+
+.navbar {
+    border-radius: 0;
+}
+
+.text-center {
+    text-align: center;
+}
+
+textarea, input, .code, pre, code {
+    font-family: "Source Code Pro", monospace;
+}
+textarea, input {
+    padding: 10px;
+}
+
+
+
+.list-group.base {
+    max-width: 400px;
+    border: 1px solid var(--dark-gray);
+}
+.list-group.list-group-root {
+    padding: 0;
+    overflow: hidden;
+}
+.list-group.list-group-root .list-group {
+    margin-bottom: 0;
+}
+.list-group.list-group-root .list-group-item {
+    border-radius: 0;
+    border-width: 1px 0 0 0;
+}
+.list-group.list-group-root .list-group-item:hover {
+    background-color: var(--light-gray);
+}
+.list-group.list-group-root > .list-group-item:first-child {
+    border-top-width: 0;
+}
+.list-group.list-group-root > .list-group > .list-group-item {
+    padding-left: 30px;
+}
+.list-group.list-group-root > .list-group > .list-group > .list-group-item {
+    padding-left: 45px;
+}
