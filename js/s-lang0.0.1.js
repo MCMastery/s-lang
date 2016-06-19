@@ -46,7 +46,8 @@ returns
  */
 function stringInBrackets(string, startIndex, startBracketSymbol, endBracketSymbol) {
     var layer = 0;
-    for (var i = startIndex; i < string.length; i++) {
+    var i;
+    for (i = startIndex; i < string.length; i++) {
         if (string.charAt(i) == startBracketSymbol)
             layer++;
         else if (string.charAt(i) == endBracketSymbol) {
@@ -55,7 +56,8 @@ function stringInBrackets(string, startIndex, startBracketSymbol, endBracketSymb
                 return string.substring(startIndex + 1, i);
         }
     }
-    return null;
+    // last bracket not given. assume this is to save a byte, and use the last text as argument
+    return string.substring(startIndex + 1, i);
 }
 
 function run() {
