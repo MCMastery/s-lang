@@ -1,3 +1,17 @@
+String.prototype.replaceAt = function(index, character) {
+    return this.substr(0, index) + character + this.substr(index + character.length);
+};
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+};String.prototype.replaceAllNoRegex = function(search, replacement) {
+    var target = this;
+    return target.split(search).join(replacement);
+};
+
+
+
+
 var input, string, output;
 
 
@@ -10,9 +24,29 @@ window.addEventListener("load", function() {
 function nextChar(string, index) {
     return index >= string.length ? null : string.charAt(index + 1);
 }
-String.prototype.replaceAt = function(index, character) {
-    return this.substr(0, index) + character + this.substr(index + character.length);
-};
+function getArguments(string, functionIndex) {
+    var args = [];
+    if (nextChar(string, functionIndex) != '[')
+        return args;
+    var arg = "";
+    for (var i = functionIndex + 1; i < string.length; i++) {
+        var char = string.charAt(i);
+        if (char == '[' && arg == "") {
+            // we just don't want to add '[' to the argument
+        }
+        else if (char == ']') {
+            args.push(arg);
+            arg = "";
+            if (nextChar(string, i) != '[')
+                return args;
+        } else
+            arg += char;
+    }
+    if (arg != "")
+        args.push(arg);
+    return args;
+}
+
 /*
 example:
 stringInBrackets("this [is a [good ] ]example", 5, '[', ']')
@@ -39,16 +73,18 @@ function run() {
     string = document.getElementById("inputString").value;
     for (var i = 0; i < input.length; i++) {
         var char = input.charAt(i);
+        console.log(char);
         switch (char) {
             // reverse
             case 'r':
-                var regex = new RegExp(".");
-                if (nextChar(input, i) == '[') {
-                    var reg = stringInBrackets(input, i + 1, '[', ']');
-                    // skip over regex (and brackets)
-                    i += reg.length + 2;
-                    regex = new RegExp(reg);
-                }
+                var args = getArguments(input, i);
+                var regex = (args.length == 0) ? new RegExp(".") : new RegExp(args[0]);
+                // if (nextChar(input, i) == '[') {
+                //     var reg = stringInBrackets(input, i + 1, '[', ']');
+                //     // skip over regex (and brackets)
+                //     i += reg.length + 2;
+                //     regex = new RegExp(reg);
+                // }
                 /*
                  abcdefgabc
                  a|c|g
@@ -76,19 +112,30 @@ function run() {
 
             // capitalize
             case 'c':
-                var regex = new RegExp(".");
-                if (nextChar(input, i) == '[') {
-                    var reg = stringInBrackets(input, i + 1, '[', ']');
-                    // skip over regex (and brackets)
-                    i += reg.length + 2;
-                    regex = new RegExp(reg);
-                }
+                var args = getArguments(input, i);
+                var regex = (args.length == 0) ? new RegExp(".") : new RegExp(args[0]);
 
                 for (var j = 0; j < string.length; j++) {
                     var c = string.charAt(j);
                     if (regex.test(c))
                         string = string.replaceAt(j, c.toUpperCase());
                 }
+                break;
+
+            // replace with regex
+            case 't':
+                var args = getArguments(input, i);
+                var search = args[0], replace = args[1];
+                i += (search.length + 2) + (replace.length + 2);
+                string = string.replaceAll(search, replace);
+                break;
+
+            // replace without regex
+            case 'T':
+                var args = getArguments(input, i);
+                var search = args[0], replace = args[1];
+                i += (search.length + 2) + (replace.length + 2);
+                string = string.replaceAllNoRegex(search, replace);
                 break;
         }
     }
