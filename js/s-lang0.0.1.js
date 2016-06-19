@@ -88,7 +88,7 @@ function run() {
                 if (useSelection) {
                     reverseCharIndexes = selection;
                     for (var j = 0; j < reverseCharIndexes.length; j++)
-                        reverseChars[j] = string.charAt(j);
+                        reverseChars[j] = string.charAt(reverseCharIndexes[j]);
                 } else {
                     for (var j = 0; j < string.length; j++) {
                         var c = string.charAt(j);
