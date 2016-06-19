@@ -64,19 +64,18 @@ function run() {
     input = document.getElementById("input").value;
     input = input.replaceAll("\n", "");
     string = document.getElementById("inputString").value;
+
+    var selection = [];
     for (var i = 0; i < input.length; i++) {
         var char = input.charAt(i);
         switch (char) {
             // reverse
             case 'r':
                 var args = getArguments(input, i);
+                if (args.length != 0)
+                    i += args[0].length + 2;
                 var regex = (args.length == 0) ? new RegExp(".") : new RegExp(args[0]);
-                // if (nextChar(input, i) == '[') {
-                //     var reg = stringInBrackets(input, i + 1, '[', ']');
-                //     // skip over regex (and brackets)
-                //     i += reg.length + 2;
-                //     regex = new RegExp(reg);
-                // }
+
                 /*
                  abcdefgabc
                  a|c|g
@@ -85,11 +84,18 @@ function run() {
                  */
 
                 var reverseChars = [], reverseCharIndexes = [];
-                for (var j = 0; j < string.length; j++) {
-                    var c = string.charAt(j);
-                    if (regex.test(c)) {
-                        reverseChars.push(c);
-                        reverseCharIndexes.push(j);
+                var useSelection = args.length == 0 && selection.length != 0;
+                if (useSelection) {
+                    reverseCharIndexes = selection;
+                    for (var j = 0; j < reverseCharIndexes.length; j++)
+                        reverseChars[j] = string.charAt(j);
+                } else {
+                    for (var j = 0; j < string.length; j++) {
+                        var c = string.charAt(j);
+                        if (regex.test(c)) {
+                            reverseChars.push(c);
+                            reverseCharIndexes.push(j);
+                        }
                     }
                 }
                 reverseChars = reverseChars.reverse();
@@ -105,12 +111,44 @@ function run() {
             // capitalize
             case 'c':
                 var args = getArguments(input, i);
+                if (args.length != 0)
+                    i += args[0].length + 2;
                 var regex = (args.length == 0) ? new RegExp(".") : new RegExp(args[0]);
 
-                for (var j = 0; j < string.length; j++) {
-                    var c = string.charAt(j);
-                    if (regex.test(c))
-                        string = string.replaceAt(j, c.toUpperCase());
+                var useSelection = args.length == 0 && selection.length != 0;
+                if (useSelection) {
+                    for (var j = 0; j < selection.length; j++) {
+                        var index = selection[j];
+                        string = string.replaceAt(index, string.charAt(index).toUpperCase());
+                    }
+                } else {
+                    for (var j = 0; j < string.length; j++) {
+                        var c = string.charAt(j);
+                        if (regex.test(c))
+                            string = string.replaceAt(j, c.toUpperCase());
+                    }
+                }
+                break;
+
+            // lower case
+            case 'C':
+                var args = getArguments(input, i);
+                if (args.length != 0)
+                    i += args[0].length + 2;
+                var regex = (args.length == 0) ? new RegExp(".") : new RegExp(args[0]);
+
+                var useSelection = args.length == 0 && selection.length != 0;
+                if (useSelection) {
+                    for (var j = 0; j < selection.length; j++) {
+                        var index = selection[j];
+                        string = string.replaceAt(index, string.charAt(index).toLowerCase());
+                    }
+                } else {
+                    for (var j = 0; j < string.length; j++) {
+                        var c = string.charAt(j);
+                        if (regex.test(c))
+                            string = string.replaceAt(j, c.toLowerCase());
+                    }
                 }
                 break;
 
@@ -128,6 +166,54 @@ function run() {
                 var search = args[0], replace = args[1];
                 i += (search.length + 2) + (replace.length + 2);
                 string = string.replaceAllNoRegex(search, replace);
+                break;
+
+
+            // select with optional regex (otherwise, selects all input)
+            case 's':
+                var args = getArguments(input, i);
+                if (args.length != 0)
+                    i += args[0].length + 2;
+                var regex = (args.length == 0) ? new RegExp(".") : new RegExp(args[0]);
+                selection = [];
+                for (var j = 0; j < string.length; j++)
+                    if (regex.test(string.charAt(j)))
+                        selection.push(j);
+                console.log(selection);
+                break;
+
+            // append to selection with optional regex (otherwise, selects all input)
+            case 'a':
+                var args = getArguments(input, i);
+                if (args.length != 0)
+                    i += args[0].length + 2;
+                var regex = (args.length == 0) ? new RegExp(".") : new RegExp(args[0]);
+                for (var j = 0; j < string.length; j++)
+                    if (regex.test(string.charAt(j)))
+                        selection.push(j);
+                console.log(selection);
+                break;
+
+            // delete from selection with optional regex (otherwise, selects all input)
+            case 'A':
+                var args = getArguments(input, i);
+                if (args.length != 0)
+                    i += args[0].length + 2;
+                var regex = (args.length == 0) ? new RegExp(".") : new RegExp(args[0]);
+                for (var j = 0; j < string.length; j++) {
+                    if (regex.test(string.charAt(j))) {
+                        var index = selection.indexOf(j);
+                        if (index >= 0)
+                            selection.splice(index, 1);
+                    }
+                }
+                console.log(selection);
+                break;
+
+            // clears the selection
+            case 'S':
+                selection = [];
+                console.log(selection);
                 break;
         }
     }

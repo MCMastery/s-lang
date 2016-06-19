@@ -44,6 +44,9 @@
     <div class="col-sm-9">
         <h1 id="operators">Operators</h1>
 
+        <div class="card card-block">
+            If no regex is given for a function, it will default to <span class="code">.</span> (matches all characters)
+        </div>
         <table class="table" style="background-color: #ffffff">
             <thead class="thead-inverse">
             <tr>
@@ -58,7 +61,11 @@
             </tr>
             <tr>
                 <th scope="row" class="code">c</th>
-                <td>Capitalizes the string, with optional character regex matching (see the <a href="#capitalize-vowels">capitalize vowels example</a>)</td>
+                <td>Converts the string to upper-case, with optional character regex matching (see the <a href="#capitalize-vowels">capitalize vowels example</a>)</td>
+            </tr>
+            <tr>
+                <th scope="row" class="code">C</th>
+                <td>Converts the string to lower-case, with optional character regex matching</td>
             </tr>
             <tr>
                 <th scope="row" class="code">t</th>
@@ -67,6 +74,22 @@
             <tr>
                 <th scope="row" class="code">T</th>
                 <td>Replace without regex function, with search and replace arguments</td>
+            </tr>
+            <tr>
+                <th scope="row" class="code">s</th>
+                <td>Selects indexes of the input string that match the given regex</td>
+            </tr>
+            <tr>
+                <th scope="row" class="code">S</th>
+                <td>Clears the selection</td>
+            </tr>
+            <tr>
+                <th scope="row" class="code">a</th>
+                <td>Same as <span class="code">s</span>, but instead of resetting the selection, it appends onto it</td>
+            </tr>
+            <tr>
+                <th scope="row" class="code">A</th>
+                <td>Same as <span class="code">a</span>, but instead of adding to the selection, it deletes from it</td>
             </tr>
             </tbody>
         </table>
