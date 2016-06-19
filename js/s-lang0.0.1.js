@@ -26,24 +26,12 @@ function nextChar(string, index) {
 }
 function getArguments(string, functionIndex) {
     var args = [];
-    if (nextChar(string, functionIndex) != '[')
-        return args;
-    var arg = "";
-    for (var i = functionIndex + 1; i < string.length; i++) {
-        var char = string.charAt(i);
-        if (char == '[' && arg == "") {
-            // we just don't want to add '[' to the argument
-        }
-        else if (char == ']') {
-            args.push(arg);
-            arg = "";
-            if (nextChar(string, i) != '[')
-                return args;
-        } else
-            arg += char;
+    for (var i = functionIndex; i < string.length; i++) {
+        var char = nextChar(string, i);
+        if (char != "[")
+            return args;
+        args.push(stringInBrackets(string, i + 1, '[', ']'));
     }
-    if (arg != "")
-        args.push(arg);
     return args;
 }
 
@@ -73,7 +61,6 @@ function run() {
     string = document.getElementById("inputString").value;
     for (var i = 0; i < input.length; i++) {
         var char = input.charAt(i);
-        console.log(char);
         switch (char) {
             // reverse
             case 'r':
