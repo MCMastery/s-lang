@@ -1,3 +1,19 @@
+
+function pregQuote(str) {
+    // http://kevin.vanzonneveld.net
+    // +   original by: booeyOH
+    // +   improved by: Ates Goral (http://magnetiq.com)
+    // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+    // +   bugfixed by: Onno Marsman
+    // *     example 1: preg_quote("$40");
+    // *     returns 1: '\$40'
+    // *     example 2: preg_quote("*RRRING* Hello?");
+    // *     returns 2: '\*RRRING\* Hello\?'
+    // *     example 3: preg_quote("\\.+*?[^]$(){}=!<>|:");
+    // *     returns 3: '\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:'
+
+    return (str + '').replaceAll(/([\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:])/g, "\\$1");
+}
 String.prototype.replaceAt = function(index, character) {
     return this.substr(0, index) + character + this.substr(index + character.length);
 };
@@ -5,9 +21,28 @@ String.prototype.replaceAll = function(search, replacement) {
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
 };
+String.prototype.replaceAllIgnoreCase = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'gi'), replacement);
+};
 String.prototype.replaceAllNoRegex = function(search, replacement) {
     var target = this;
     return target.split(search).join(replacement);
+};
+String.prototype.replaceAllNoRegexIgnoreCase = function(search, replacement) {
+    return this.replaceAllIgnoreCase(pregQuote(search), replacement);
+};
+Array.prototype.contains = function(element) {
+    return this.indexOf(element) >= 0;
+};
+String.prototype.isAlphabetic = function() {
+    return this.length === 1 && this.match(/[a-z]/i);
+};
+String.prototype.isUpperCase = function() {
+    for (var i = 0; i < this.length; i++)
+        if (this.charAt(i) != this.charAt(i).toUpperCase())
+            return false;
+    return true;
 };
 
 
@@ -27,15 +62,34 @@ function nextChar(string, index) {
 }
 function getArguments(string, functionIndex) {
     var args = [];
-    for (var i = functionIndex; i < string.length; i++) {
+    for (var i = functionIndex; i < string.length - 1; i++) {
         var char = nextChar(string, i);
-        if (char != "[")
+        if (char != '[')
             return args;
         var arg = stringInBrackets(string, i + 1, '[', ']');
         i += arg.length + 1;
         args.push(arg);
     }
     return args;
+}
+function getParamaters(string, functionIndex) {
+    var params = [];
+    for (var i = functionIndex + 1; i < string.length; i++) {
+        var char = string.charAt(i);
+        if (char == '[')
+            return params;
+        params.push(char);
+    }
+    return params;
+}
+function matchCase(text, pattern) {
+    var caseMatch = text;
+    for (var i = 0; i < pattern.length && i < text.length; i++) {
+        var textChar = text.charAt(i), patternChar = pattern.charAt(i);
+        if (patternChar.isAlphabetic())
+            caseMatch = caseMatch.replaceAt(i, patternChar.isUpperCase() ? textChar.toUpperCase() : textChar.toLowerCase());
+    }
+    return caseMatch;
 }
 
 /*
@@ -154,19 +208,36 @@ function run() {
 
             // replace with regex
             case 't':
-                var args = getArguments(input, i);
+                var params = getParamaters(input, i);
+                var args = getArguments(input, i + params.length);
                 var search = args[0], replace = args[1];
-                i += (search.length + 2) + (replace.length + 2);
-                string = string.replaceAll(search, replace);
+                i += params.length + (search.length + 2) + (replace.length + 2);
+                // p parameter = preserve case
+                if (params.contains('p')) {
+                    string = string.replaceAllIgnoreCase(search, function(match) {
+                        return matchCase(replace, match);
+                    });
+                } else
+                    string = string.replaceAll(search, replace);
                 break;
 
             // replace without regex
             case 'T':
-                var args = getArguments(input, i);
+                var params = getParamaters(input, i);
+                var args = getArguments(input, i + params.length);
                 var search = args[0], replace = args[1];
-                i += (search.length + 2) + (replace.length + 2);
-                string = string.replaceAllNoRegex(search, replace);
+                i += params.length + (search.length + 2) + (replace.length + 2);
+                // p parameter = preserve case
+                if (params.contains('p')) {
+                    string = string.replaceAllNoRegexIgnoreCase(search, function(match) {
+                        return matchCase(replace, match);
+                    });
+                } else
+                    string = string.replaceAllNoRegex(search, replace);
                 break;
+
+
+
 
 
             // select with optional regex (otherwise, selects all input)

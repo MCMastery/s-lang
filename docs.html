@@ -47,6 +47,9 @@
         <div class="card card-block">
             If no regex is given for a function, it will default to <span class="code">.</span> (matches all characters), unless the selection is not empty (then it will use the selection)
         </div>
+        <div class="card card-block">
+            Parameters are to be inserted directly after the function token and before the first argument open bracket
+        </div>
         <table class="table" style="background-color: #ffffff">
             <thead class="thead-inverse">
             <tr>
@@ -69,11 +72,23 @@
             </tr>
             <tr>
                 <th scope="row" class="code">t</th>
-                <td>Replace function, with search and replace regex arguments</td>
+                <td>
+                    Replace function, with search and replace regex arguments<br />
+                    Parameters:
+                    <ul>
+                        <li><span class="code">p</span> - Preserves the case when replacing</li>
+                    </ul>
+                </td>
             </tr>
             <tr>
                 <th scope="row" class="code">T</th>
-                <td>Replace without regex function, with search and replace arguments</td>
+                <td>
+                    Replace without regex function, with search and replace arguments<br />
+                    Parameters:
+                    <ul>
+                        <li><span class="code">p</span> - Preserves the case when replacing</li>
+                    </ul>
+                </td>
             </tr>
             <tr>
                 <th scope="row" class="code">s</th>
