@@ -40,6 +40,7 @@ function run() {
     for (var i = 0; i < input.length; i++) {
         var char = input.charAt(i);
         switch (char) {
+            // reverse
             case 'r':
                 var regex = new RegExp(".");
                 if (nextChar(input, i) == '[') {
@@ -69,6 +70,24 @@ function run() {
                     var ch = reverseChars[j];
                     var index = reverseCharIndexes[j];
                     string = string.replaceAt(index, ch);
+                }
+                break;
+
+
+            // capitalize
+            case 'c':
+                var regex = new RegExp(".");
+                if (nextChar(input, i) == '[') {
+                    var reg = stringInBrackets(input, i + 1, '[', ']');
+                    // skip over regex (and brackets)
+                    i += reg.length + 2;
+                    regex = new RegExp(reg);
+                }
+
+                for (var j = 0; j < string.length; j++) {
+                    var c = string.charAt(j);
+                    if (regex.test(c))
+                        string = string.replaceAt(j, c.toUpperCase());
                 }
                 break;
         }
