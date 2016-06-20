@@ -24,6 +24,9 @@ function Range(start, end) {
         for (var i = this.start; i <= this.end; i++)
             array.push(i);
         return array;
+    };
+    this.contains = function(index) {
+        return index >= this.start && index <= this.end;
     }
 }
 
@@ -50,13 +53,16 @@ Array.prototype.removeDuplicates = function() {
 };
 
 
-// use range object
-String.prototype.range = function(range) {
-    // + 1 since ranges are inclusive
-    return this.substring(range.start, range.end + 1);
-};
 String.prototype.replaceAt = function(index, character) {
-    return this.substr(0, index) + character + this.substr(index + character.length);
+    return this.substring(0, index) + character + this.substring(index + character.length);
+};
+// range object
+String.prototype.replaceRange = function(range, character) {
+    return this.substring(0, range.start) + character + this.substring(range.end + 1); // +1 since ranges are inclusive
+};
+// range object
+String.prototype.getRange = function(range) {
+    return this.substring(range.start, range.end + 1); // +1 since ranges are inclusive
 };
 String.prototype.replaceAll = function(search, replacement) {
     var target = this;
@@ -108,11 +114,11 @@ function getArguments(string, functionIndex) {
     }
     return args;
 }
-function getParamaters(string, functionIndex) {
+function getParameters(string, functionIndex) {
     var params = [];
     for (var i = functionIndex + 1; i < string.length; i++) {
         var char = string.charAt(i);
-        if (char == '[')
+        if (char == '[' || char.isAlphabetic())
             return params;
         params.push(char);
     }
@@ -147,6 +153,99 @@ function indexArrayToSelection(indexArray) {
 }
 
 
+
+
+
+
+// removes the ranges in arrayTwo from arrayOne, and returns the new array
+function subtractRangeArrays(arrayOne, arrayTwo) {
+    var indexArrayOne = selectionToIndexArray(arrayOne),
+        indexArrayTwo = selectionToIndexArray(arrayTwo);
+    var subtraction = indexArrayOne;
+    for (var i = 0; i < indexArrayTwo.length; i++) {
+        var index = indexArrayOne.indexOf(indexArrayTwo[i]);
+        if (index >= 0)
+            subtraction.splice(index, 1);
+    }
+    return optimizeRanges(indexArrayToSelection(subtraction));
+}
+// ex: converts [{0, 5}, {3, 10}] to [{0, 10}]
+// assumes ranges' lengths are > 1 (not {3, 1})
+// still needs some more testing
+function optimizeRanges(rangeArray) {
+    /*
+    test case:
+    [{0, 2}, {2, 4}] -> true
+    [{0, 0}, {-1, 1}] -> true
+    [{3, 7}, {4, 5}] -> true
+    [{0, 4}, {5, 7}] -> true
+     */
+    function rangesConnect(rangeOne, rangeTwo) {
+        // if one range's value is contained in the other
+        if (rangeTwo.contains(rangeOne.start) || rangeTwo.contains(rangeOne.end)
+            || rangeOne.contains(rangeTwo.start) || rangeOne.contains(rangeTwo.end))
+            return true;
+        // if rangeOne's values is 1 away from the other (see test case 4)
+        else if (rangeTwo.contains(rangeOne.start - 1) || rangeTwo.contains(rangeOne.start + 1)
+            || rangeTwo.contains(rangeOne.end - 1) || rangeTwo.contains(rangeOne.end + 1))
+            return true;
+        // same thing, but for rangeTwo
+        else if (rangeOne.contains(rangeTwo.start - 1) || rangeOne.contains(rangeTwo.start + 1)
+            || rangeOne.contains(rangeTwo.end - 1) || rangeOne.contains(rangeTwo.end + 1))
+            return true;
+        return false;
+    }
+
+    var optimizedRanges = [];
+    // sort ranges based on starting positions
+    rangeArray = rangeArray.sort(function(a, b) {
+        if (a.start == b.start)
+            return 0;
+        else if (a.start < b.start)
+            return -1;
+        return 1;
+    });
+    var compactedRange = null;
+    for (var i = 0; i < rangeArray.length; i++) {
+        var range = rangeArray[i];
+        if (compactedRange == null)
+            compactedRange = range;
+        else {
+            if (rangesConnect(compactedRange, range)) {
+                // expand compacted range to match range's bounds
+                compactedRange.start = Math.min(compactedRange.start, range.start);
+                compactedRange.end = Math.max(compactedRange.end, range.end);
+            } else {
+                optimizedRanges.push(compactedRange);
+                compactedRange = range;
+            }
+        }
+    }
+    if (compactedRange != null)
+        optimizedRanges.push(compactedRange);
+    return optimizedRanges;
+}
+// IMPORTANT: REGEX GIVEN MUST BE STRING!!!!!!
+function getSelection(string, regexString, ignoreCase) {
+    // create regex to keep delimiters, as separate elements
+    // the delimiters in this case are the matches strings we are selecting by the regex
+    var params = "g";
+    if (ignoreCase)
+        params += "i";
+    var split = string.split(new RegExp("(" + regexString + ")", params));
+    var rangeArray = [];
+    var index = 0;
+    for (var i = 0; i < split.length; i++) {
+        var str = split[i];
+        // if this string element of split is a delimiter, add its range to the selection
+        if (i % 2 == 1) {
+            var range = new Range(index, index + str.length - 1); // -1 since range is inclusive
+            rangeArray.push(range);
+        }
+        index += str.length;
+    }
+    return optimizeRanges(rangeArray);
+}
 // splits a string into a range array
 // IMPORTANT: REGEX GIVEN MUST BE STRING!!!!!!
 function splitStringIntoSelection(string, regexString) {
@@ -200,18 +299,19 @@ function run() {
     input = input.replaceAll("\n", "");
     string = document.getElementById("inputString").value;
 
+    console.log("Running code " + input + " with input string " + string);
+
     // selection is an array of range objects
     var selection = [];
     for (var i = 0; i < input.length; i++) {
         var char = input.charAt(i);
+        var params = getParameters(input, i);
+        var args = getArguments(input, i + params.length);
+        console.log("Evaluation function " + char);
         switch (char) {
             // reverse
             case 'r':
-                var args = getArguments(input, i);
-                if (args.length != 0)
-                    i += args[0].length + 2;
                 var regex = (args.length == 0) ? new RegExp(".") : new RegExp(args[0]);
-
                 /*
                  abcdefgabc
                  a|c|g
@@ -246,58 +346,51 @@ function run() {
 
             // capitalize
             case 'c':
-                var args = getArguments(input, i);
-                if (args.length != 0)
-                    i += args[0].length + 2;
-                var regex = (args.length == 0) ? new RegExp(".") : new RegExp(args[0]);
-
+                var regex = (args.length == 0) ? "." : args[0];
                 var useSelection = args.length == 0 && selection.length != 0;
-                if (useSelection) {
-                    var selectionIndices = selectionToIndexArray(selection);
-                    for (var j = 0; j < selectionIndices.length; j++) {
-                        var index = selectionIndices[j];
-                        string = string.replaceAt(index, string.charAt(index).toUpperCase());
-                    }
-                } else {
-                    for (var j = 0; j < string.length; j++) {
-                        var c = string.charAt(j);
-                        if (regex.test(c))
-                            string = string.replaceAt(j, c.toUpperCase());
-                    }
+                var ranges;
+                if (!useSelection)
+                    ranges = getSelection(string, regex); // get selection from regex
+                else
+                    ranges = selection;
+
+                // only capitalize first letter
+                for (var j = 0; j < ranges.length; j++) {
+                    var range = ranges[j];
+                    // make first letter capital
+                    if (params.contains('!'))
+                        string = string.replaceAt(range.start, string.charAt(range.start).toUpperCase());
+                    else
+                        string = string.replaceRange(range, string.getRange(range).toUpperCase())
                 }
                 break;
 
             // lower case
             case 'C':
-                var args = getArguments(input, i);
-                if (args.length != 0)
-                    i += args[0].length + 2;
-                var regex = (args.length == 0) ? new RegExp(".") : new RegExp(args[0]);
-
+                var regex = (args.length == 0) ? "." : args[0];
                 var useSelection = args.length == 0 && selection.length != 0;
-                if (useSelection) {
-                    var selectionIndices = selectionToIndexArray(selection);
-                    for (var j = 0; j < selectionIndices.length; j++) {
-                        var index = selectionIndices[j];
-                        string = string.replaceAt(index, string.charAt(index).toLowerCase());
-                    }
-                } else {
-                    for (var j = 0; j < string.length; j++) {
-                        var c = string.charAt(j);
-                        if (regex.test(c))
-                            string = string.replaceAt(j, c.toLowerCase());
-                    }
+                var ranges;
+                if (!useSelection)
+                    ranges = getSelection(string, regex); // get selection from regex
+                else
+                    ranges = selection;
+
+                // only lower case first letter
+                for (var j = 0; j < ranges.length; j++) {
+                    var range = ranges[j];
+                    // make first letter capital
+                    if (params.contains('!'))
+                        string = string.replaceAt(range.start, string.charAt(range.start).toLowerCase());
+                    else
+                        string = string.replaceRange(range, string.getRange(range).toLowerCase())
                 }
                 break;
 
             // replace with regex
             case 't':
-                var params = getParamaters(input, i);
-                var args = getArguments(input, i + params.length);
                 var search = args[0], replace = args[1];
-                i += params.length + (search.length + 2) + (replace.length + 2);
-                // p parameter = preserve case
-                if (params.contains('p')) {
+                // preserve case
+                if (params.contains('!')) {
                     string = string.replaceAllIgnoreCase(search, function(match) {
                         return matchCase(replace, match);
                     });
@@ -307,12 +400,9 @@ function run() {
 
             // replace without regex
             case 'T':
-                var params = getParamaters(input, i);
-                var args = getArguments(input, i + params.length);
                 var search = args[0], replace = args[1];
-                i += params.length + (search.length + 2) + (replace.length + 2);
-                // p parameter = preserve case
-                if (params.contains('p')) {
+                // preserve case
+                if (params.contains('!')) {
                     string = string.replaceAllNoRegexIgnoreCase(search, function(match) {
                         return matchCase(replace, match);
                     });
@@ -328,41 +418,22 @@ function run() {
 
             // append to selection with optional regex (otherwise, selects all input)
             case 's':
-                var args = getArguments(input, i);
-                if (args.length != 0)
-                    i += args[0].length + 2;
-                var regex = (args.length == 0) ? new RegExp(".") : new RegExp(args[0]);
-                var selectionIndices = [];
-                for (var j = 0; j < string.length; j++)
-                    if (regex.test(string.charAt(j)))
-                        selectionIndices.push(j);
-                var selectionAddition = indexArrayToSelection(selectionIndices);
+                var regex = (args.length == 0) ? "." : args[0];
+                // ignore case
+                var selectionAddition = getSelection(string, regex, params.contains('!')); // if "!" parameter is given, ignore case
                 selection = selection.concat(selectionAddition);
-                console.log(selection);
                 break;
 
             // delete from selection with optional regex (otherwise, selects all input)
             case 'd':
-                var args = getArguments(input, i);
-                if (args.length != 0)
-                    i += args[0].length + 2;
-                var regex = (args.length == 0) ? new RegExp(".") : new RegExp(args[0]);
-                var selectionIndices = selectionToIndexArray(selection);
-                for (var j = 0; j < string.length; j++) {
-                    if (regex.test(string.charAt(j))) {
-                        var index = selectionIndices.indexOf(j);
-                        if (index >= 0)
-                            selectionIndices.splice(index, 1);
-                    }
-                }
-                selection = indexArrayToSelection(selectionIndices);
-                console.log(selection);
+                var regex = (args.length == 0) ? "." : args[0];
+                var selectionDeletion = getSelection(string, regex, params.contains('!'));
+                selection = subtractRangeArrays(selection, selectionDeletion);
                 break;
 
             // clears the selection
             case 'S':
                 selection = [];
-                console.log(selection);
                 break;
 
 
@@ -371,14 +442,17 @@ function run() {
             // range selecting
             // "split" - splits the input string by given regex and adds resulting strings to selection
             case 'w':
-                var args = getArguments(input, i);
                 var regex = args[0];
-                i += regex.length + 2;
                 var split = splitStringIntoSelection(string, regex);
                 selection = selection.concat(split);
-                console.log(selection);
                 break;
         }
+
+
+        // increment counter based on parameters and arguments lengths
+        for (var j = 0; j < args.length; j++)
+            i += args[j].length + 2;
+        i += params.length;
     }
     output.value = string;
 }
