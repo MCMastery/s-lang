@@ -37,6 +37,8 @@
         <div class="list-group">
             <a href="#reverse-vowels" class="list-group-item">Reverse Vowels</a>
             <a href="#capitalize-vowels" class="list-group-item">Capitalize Vowels</a>
+            <a href="#string-formatter" class="list-group-item">String Formatter</a>
+            <a href="#string-formatter-deluxe" class="list-group-item">String Formatter <strong>Deluxe Edition</strong></a>
         </div>
     </div>
 
@@ -124,7 +126,8 @@
             </tr>
             <tr>
                 <th scope="row" class="code">w</th>
-                <td>Splits the given string up by the given regex argument, and adds the split-up strings into the selection</td>
+                <td>Splits the given string up by the given regex argument, and adds the split-up strings into the selection
+                    (see the <a href="#string-formatter">string formatter example</a>)</td>
             </tr>
             </tbody>
         </table>
@@ -135,7 +138,7 @@
         <h1 id="examples">Examples</h1>
 
         <div id="reverse-vowels" class="card card-block">
-            <h4 class="card-title">Reverse only the Vowels</h4>
+            <h4 class="card-title">Reverse Only the Vowels</h4>
             <p class="card-text">Reverses only the vowels in the given input string.</p>
             <pre>r[[aeiou]]</pre>
             <p class="card-text">
@@ -144,11 +147,32 @@
         </div>
 
         <div id="capitalize-vowels" class="card card-block">
-            <h4 class="card-title">Capitalize only the Vowels</h4>
+            <h4 class="card-title">Capitalize Only the Vowels</h4>
             <p class="card-text">Capitalizes only the vowels in the given input string.</p>
             <pre>c[[aeiou]]</pre>
             <p class="card-text">
                 <a class="btn btn-primary" href="index.html?c[[aeiou]]" target="_blank">Open with s-lang</a>
+            </p>
+        </div>
+
+        <div id="string-formatter" class="card card-block">
+            <h4 class="card-title">String Formatter</h4>
+            <p class="card-text">Converts to lower case, and capitalizes the first letter in each word.</p>
+            <pre>w[ ]Cc!</pre>
+            <p class="card-text">
+                <a class="btn btn-primary" href="index.html?w[ ]Cc!" target="_blank">Open with s-lang</a>
+            </p>
+        </div>
+
+        <div id="string-formatter-deluxe" class="card card-block">
+            <h4 class="card-title">String Formatter <strong>Deluxe Edition</strong></h4>
+            <p class="card-text">
+                Same as <a href="#string-formatter">String Formatter</a>, but does not capitalize "small" words.<br />
+                <span class="code">s![a |an |the |for |and |nor |but |or |yet |so |on |at |to |from |by ]</span> selects any of those words (case-insensitive)
+            </p>
+            <pre>w[ ]Cc!Ss![a |an |the |for |and |nor |but |or |yet |so |on |at |to |from |by ]C</pre>
+            <p class="card-text">
+                <a class="btn btn-primary" href="index.html?w[ ]Cc!Ss![a |an |the |for |and |nor |but |or |yet |so |on |at |to |from |by ]C" target="_blank">Open with s-lang</a>
             </p>
         </div>
     </div>
