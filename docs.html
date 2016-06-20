@@ -62,7 +62,13 @@
             <tbody>
             <tr>
                 <th scope="row" class="code">r</th>
-                <td>Reverses the string, with optional character regex matching (see the <a href="#reverse-vowels">reverse vowels example</a>)</td>
+                <td>Reverses the string, with optional character regex matching (see the <a href="#reverse-vowels">reverse vowels example</a>)<br />
+                    Parameters:
+                    <ul>
+                        <li><span class="code">!</span> - Ignores case when selecting using regex</li>
+                        <li><span class="code">@</span> - Reverses each range selected in its own place (see the <a href="#reverse-words">reverse words example</a>)</li>
+                    </ul>
+                </td>
             </tr>
             <tr>
                 <th scope="row" class="code">c</th>
@@ -173,6 +179,15 @@
             <pre>w[ ]Cc!Ss![a |an |the |for |and |nor |but |or |yet |so |on |at |to |from |by ]C</pre>
             <p class="card-text">
                 <a class="btn btn-primary" href="index.html?w[ ]Cc!Ss![a |an |the |for |and |nor |but |or |yet |so |on |at |to |from |by ]C" target="_blank">Open with s-lang</a>
+            </p>
+        </div>
+
+        <div id="reverse-words" class="card card-block">
+            <h4 class="card-title">Reverse the Words in Place</h4>
+            <p class="card-text">Reverses each word (separated by spaces) in they're own place.</p>
+            <pre>w[ ]r@</pre>
+            <p class="card-text">
+                <a class="btn btn-primary" href="index.html?w[ ]r@" target="_blank">Open with s-lang</a>
             </p>
         </div>
     </div>

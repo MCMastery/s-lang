@@ -311,7 +311,7 @@ function run() {
         switch (char) {
             // reverse
             case 'r':
-                var regex = (args.length == 0) ? new RegExp(".") : new RegExp(args[0]);
+                var regex = (args.length == 0) ? "." : args[0];
                 /*
                  abcdefgabc
                  a|c|g
@@ -319,28 +319,72 @@ function run() {
                  new string: cbadefgcba
                  */
 
-                var reverseChars = [], reverseCharIndexes = [];
-                var useSelection = args.length == 0 && selection.length != 0;
-                if (useSelection) {
-                    reverseCharIndexes = selectionToIndexArray(selection);
-                    for (var j = 0; j < reverseCharIndexes.length; j++)
-                        reverseChars[j] = string.charAt(reverseCharIndexes[j]);
-                } else {
-                    for (var j = 0; j < string.length; j++) {
-                        var c = string.charAt(j);
-                        if (regex.test(c)) {
-                            reverseChars.push(c);
-                            reverseCharIndexes.push(j);
-                        }
+                function StringInfo(string, range) {
+                    this.string = string;
+                    this.range = range;
+                    this.reverse = function() {
+                        return this.string.split("").reverse().join("");
                     }
                 }
-                reverseChars = reverseChars.reverse();
 
-                for (var j = 0; j < reverseCharIndexes.length; j++) {
-                    var ch = reverseChars[j];
-                    var index = reverseCharIndexes[j];
-                    string = string.replaceAt(index, ch);
+                var reverseStrings = [];
+                var useSelection = args.length == 0 && selection.length != 0;
+                var reverseSelection = (useSelection) ? selection : getSelection(string, regex, params.contains('!')); // ! param = ignore case
+                for (var j = 0; j < reverseSelection.length; j++) {
+                    var range = reverseSelection[j];
+                    reverseStrings.push(new StringInfo(string.getRange(range), range));
                 }
+
+                if (params.contains('@')) // @ param = reverse groups of words (uses ranges), not the whole selection as one
+                    for (var j = 0; j < reverseStrings.length; j++)
+                        string = string.replaceRange(reverseStrings[j].range, reverseStrings[j].reverse());
+                else {
+                    //todo find better way of doing this
+                    // convert reverseStrings to array of single characters
+                    var reverseCharacters = [], reverseIndexes = [];
+                    for (var j = 0; j < reverseStrings.length; j++) {
+                        var stringInfo = reverseStrings[j];
+                        for (var k = 0; k < stringInfo.string.length; k++) {
+                            var index = stringInfo.range.start + k;
+                            reverseCharacters.push(stringInfo.string.charAt(k));
+                            reverseIndexes.push(index);
+                        }
+                    }
+
+                    // reverse array
+                    reverseCharacters = reverseCharacters.reverse();
+
+                    // replace
+                    for (var j = 0; j < reverseIndexes.length; j++) {
+                        var ch = reverseCharacters[j];
+                        var index = reverseIndexes[j];
+                        string = string.replaceAt(index, ch);
+                    }
+                }
+
+
+                // var reverseChars = [], reverseCharIndexes = [];
+                // var useSelection = args.length == 0 && selection.length != 0;
+                // if (useSelection) {
+                //     reverseCharIndexes = selectionToIndexArray(selection);
+                //     for (var j = 0; j < reverseCharIndexes.length; j++)
+                //         reverseChars[j] = string.charAt(reverseCharIndexes[j]);
+                // } else {
+                //     for (var j = 0; j < string.length; j++) {
+                //         var c = string.charAt(j);
+                //         if (regex.test(c)) {
+                //             reverseChars.push(c);
+                //             reverseCharIndexes.push(j);
+                //         }
+                //     }
+                // }
+                // reverseChars = reverseChars.reverse();
+                //
+                // for (var j = 0; j < reverseCharIndexes.length; j++) {
+                //     var ch = reverseChars[j];
+                //     var index = reverseCharIndexes[j];
+                //     string = string.replaceAt(index, ch);
+                // }
                 break;
 
 
