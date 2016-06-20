@@ -92,19 +92,19 @@
             </tr>
             <tr>
                 <th scope="row" class="code">s</th>
-                <td>Selects indexes of the input string that match the given regex</td>
+                <td>Selects indexes of the input string that match the given regex, and appends them to the selection</td>
             </tr>
             <tr>
                 <th scope="row" class="code">S</th>
                 <td>Clears the selection</td>
             </tr>
             <tr>
-                <th scope="row" class="code">a</th>
-                <td>Same as <span class="code">s</span>, but instead of resetting the selection, it appends onto it</td>
+                <th scope="row" class="code">d</th>
+                <td>Same as <span class="code">s</span>, but instead of adding to the selection, it deletes from it</td>
             </tr>
             <tr>
-                <th scope="row" class="code">A</th>
-                <td>Same as <span class="code">a</span>, but instead of adding to the selection, it deletes from it</td>
+                <th scope="row" class="code">w</th>
+                <td>Splits the given string up by the given regex argument, and adds the split-up strings into the selection</td>
             </tr>
             </tbody>
         </table>
@@ -117,18 +117,18 @@
         <div id="reverse-vowels" class="card card-block">
             <h4 class="card-title">Reverse only the Vowels</h4>
             <p class="card-text">Reverses only the vowels in the given input string.</p>
-            <pre>r[a|e|i|o|u]</pre>
+            <pre>r[[aeiou]]</pre>
             <p class="card-text">
-                <a class="btn btn-primary" href="index.html?r[a|e|i|o|u]" target="_blank">Open with s-lang</a>
+                <a class="btn btn-primary" href="index.html?r[[aeiou]]" target="_blank">Open with s-lang</a>
             </p>
         </div>
 
         <div id="capitalize-vowels" class="card card-block">
             <h4 class="card-title">Capitalize only the Vowels</h4>
             <p class="card-text">Capitalizes only the vowels in the given input string.</p>
-            <pre>c[a|e|i|o|u]</pre>
+            <pre>c[[aeiou]]</pre>
             <p class="card-text">
-                <a class="btn btn-primary" href="index.html?c[a|e|i|o|u]" target="_blank">Open with s-lang</a>
+                <a class="btn btn-primary" href="index.html?c[[aeiou]]" target="_blank">Open with s-lang</a>
             </p>
         </div>
     </div>
