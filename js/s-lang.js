@@ -482,6 +482,13 @@ function run() {
 
 
 
+            // loop
+            case 'l':
+
+                break;
+
+
+
 
             // range selecting
             // "split" - splits the input string by given regex and adds resulting strings to selection
@@ -498,5 +505,7 @@ function run() {
             i += args[j].length + 2;
         i += params.length;
     }
+
+    string = string.replaceAllNoRegex("\\n", "\n");
     output.value = string;
 }
