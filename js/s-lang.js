@@ -294,12 +294,7 @@ function stringInBrackets(string, startIndex, startBracketSymbol, endBracketSymb
     return string.substring(startIndex + 1, i);
 }
 
-function run() {
-    input = document.getElementById("input").value;
-    input = input.replaceAll("\n", "");
-    string = document.getElementById("inputString").value;
-
-    console.log("Running code " + input + " with input string " + string);
+function execute(input, code) {
 
     // selection is an array of range objects
     var selection = [];
@@ -307,7 +302,7 @@ function run() {
         var char = input.charAt(i);
         var params = getParameters(input, i);
         var args = getArguments(input, i + params.length);
-        console.log("Evaluation function " + char);
+        console.log("Evaluating function " + char);
         switch (char) {
             // reverse
             case 'r':
@@ -438,6 +433,10 @@ function run() {
                     string = string.replaceAllIgnoreCase(search, function(match) {
                         return matchCase(replace, match);
                     });
+                } else if (params.contains('@')) {
+                    string = string.replaceAllIgnoreCase(search, function(match) {
+                        return match.isUpperCase() ? replace.toUpperCase() : replace.toLowerCase();
+                    });
                 } else
                     string = string.replaceAll(search, replace);
                 break;
@@ -450,7 +449,11 @@ function run() {
                     string = string.replaceAllNoRegexIgnoreCase(search, function(match) {
                         return matchCase(replace, match);
                     });
-                } else
+                } else if (params.contains('@')) {
+                     string = string.replaceAllNoRegexIgnoreCase(search, function(match) {
+                         return match.isUpperCase() ? replace.toUpperCase() : replace.toLowerCase();
+                     });
+                 }  else
                     string = string.replaceAllNoRegex(search, replace);
                 break;
 
@@ -484,7 +487,11 @@ function run() {
 
             // loop
             case 'l':
+                // for every [addend] indices
+                var addend = parseInt(args[0]);
+                for (var i = 0; i < string.length; i += addend) {
 
+                }
                 break;
 
 
@@ -507,5 +514,15 @@ function run() {
     }
 
     string = string.replaceAllNoRegex("\\n", "\n");
-    output.value = string;
+    return string;
+}
+
+function run() {
+    input = document.getElementById("input").value;
+    input = input.replaceAll("\n", "");
+    string = document.getElementById("inputString").value;
+
+    console.log("Running code " + input + " with input string " + string);
+
+    output.value = execute(input);
 }
